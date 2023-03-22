@@ -1,2 +1,0 @@
-Sonarqube secret token:-
-squ_ddd17330e447d35d97dcf0d1a4bba5ba17ec85b1
