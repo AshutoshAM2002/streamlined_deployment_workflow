@@ -1,13 +1,6 @@
 pipeline{
     agent any
     stages{
-        stage("testing"){
-            steps{
-                script{
-                    sh 'id'
-                }
-            }
-        }
         stage("sonar quality check"){
             agent{
                 docker {
