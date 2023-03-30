@@ -18,11 +18,11 @@ pipeline{
                             if (qg.status != 'OK'){
                                 error "pipeline aborted due to quality gate failure: ${qg.status}"
                             }
-                                }
+                        }
                             sh "mvn clean install"
-                            }
-                }
-                    }       
+                    }
                 }
             }
         }
+    }
+}
