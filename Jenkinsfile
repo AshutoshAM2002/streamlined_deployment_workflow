@@ -31,10 +31,10 @@ pipeline{
             steps{
                 script{
                     sh '''
-                    docker build -t ashutosham2002/java-spring-boot-app:${VERSION} .
+                    docker build -t ashutosham2002/java-spring-boot-app:${\VERSION} .
                     echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                    docker push ashutosham2002/java-spring-boot-app:${VERSION}
-                    docker rmi ashutosham2002/java-spring-boot-app:${VERSION}
+                    docker push ashutosham2002/java-spring-boot-app:${\VERSION}
+                    docker rmi ashutosham2002/java-spring-boot-app:${\VERSION}
                     '''
                 }
             }
