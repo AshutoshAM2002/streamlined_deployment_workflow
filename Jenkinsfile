@@ -4,7 +4,7 @@ pipeline{
         stage("sonar quality check"){
             agent{
                 docker {
-                    image 'maven'
+                    image 'maven:3.6.3'
                     args '-v $HOME/.m2:/root/.m2'
                 }
             }
