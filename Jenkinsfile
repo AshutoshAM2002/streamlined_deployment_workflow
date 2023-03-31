@@ -2,7 +2,7 @@ pipeline{
     agent any
     environment {
         DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred')
-        VERSION = "\$(env.BUILD_ID)"
+//        VERSION = "\$(env.BUILD_ID)"
     }
     stages{
         stage("sonar quality check"){
@@ -31,10 +31,10 @@ pipeline{
             steps{
                 script{
                     sh '''
-                    docker build -t ashutosham2002/java-spring-boot-app:\${VERSION} .
+                    docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
                     echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                    docker push ashutosham2002/java-spring-boot-app:\${VERSION}
-                    docker rmi ashutosham2002/java-spring-boot-app:\${VERSION}
+                    docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
+                    docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
                     '''
                 }
             }
