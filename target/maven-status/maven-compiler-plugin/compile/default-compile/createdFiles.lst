@@ -1,0 +1,10 @@
+guru/springframework/services/ProductService.class
+guru/springframework/bootstrap/ProductLoader.class
+guru/springframework/services/ProductServiceImpl.class
+guru/springframework/domain/Product.class
+guru/springframework/configuration/SecurityConfiguration.class
+guru/springframework/controllers/IndexController.class
+guru/springframework/repositories/ProductRepository.class
+guru/springframework/configuration/WebConfiguration.class
+guru/springframework/SpringBootWebApplication.class
+guru/springframework/controllers/ProductController.class
