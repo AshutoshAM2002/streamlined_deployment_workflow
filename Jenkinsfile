@@ -42,5 +42,7 @@ pipeline{
     post {
 		always {
             emailext body: '', recipientProviders: [developers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'ashutoshmahajan2002@gmail.com'
+        }
+    }
     }
 }
