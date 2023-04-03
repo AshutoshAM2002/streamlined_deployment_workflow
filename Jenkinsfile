@@ -42,7 +42,7 @@ pipeline{
             steps{
                 script{
                     dir('kubernetes/'){
-                        sh 'helm plugin uninstall datree'
+                        sh 'helm datree test helm-charts/'
                     }
                 }
             }
