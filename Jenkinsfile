@@ -2,7 +2,6 @@ pipeline{
     agent any
     environment {
         DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred')
-//        VERSION = "\$(env.BUILD_ID)"
     }
     stages{
         stage("sonar quality check"){
@@ -36,6 +35,16 @@ pipeline{
                     docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
                     docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
                     '''
+                }
+            }
+        }
+        stage('identifying misconfig using datree in helm charts'){
+            steps{
+                script{
+
+                    dir('kubernetes/'){
+                        sh 'helm datree test helm-charts'
+                    }
                 }
             }
         }

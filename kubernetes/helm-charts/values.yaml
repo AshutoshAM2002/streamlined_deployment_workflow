@@ -1,0 +1,24 @@
+replicaCount: 1
+
+image:
+  repository: deekshithsn/ui
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 8080
+  name: ui
+  targetport: 8080
+
+container:
+  name: react-ui
+
+persistentvolume:
+  storageclass: standard
+  storage: 10Gi
+  accessmode: ReadWriteOnce
+  hostpath: /mnt/data
+
+volume:
+  name: my-volume
+
