@@ -17,11 +17,11 @@ spec:
       containers:
       - name: {{ .Values.container.name }}
         image: {{ .Values.image.repository | quote }}
-        livenessProbe:
-        exec:
-          command:
-            - cat
-            - /tmp/healthy
+#        livenessProbe:
+#        exec:
+#          command:
+#            - cat
+#            - /tmp/healthy
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.port }}
