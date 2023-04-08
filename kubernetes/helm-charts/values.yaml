@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: deekshithsn/ui:latest
+  repository: ashutosham2002/java-spring-boot-app:49
   pullPolicy: IfNotPresent
 
 service:
