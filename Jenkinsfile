@@ -27,16 +27,34 @@ pipeline{
             }
         }
         stage("docker build and docker push"){
-            steps{
-                script{
-                    sh '''
-                    docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
-                    echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                    docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
-                    docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
-                    '''
-                }
-            }
+//            steps{
+//                script{
+//                    sh '''
+//                    docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
+//                    echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+//                    docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
+//                    docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
+//                    '''
+//                }
+//            }
+              steps{
+                 script{
+                    def dockerfileHash = sh(returnStdout: true, script: "md5sum Dockerfile | cut -d ' ' -f1").trim()
+                    def sourceCodeHash = sh(returnStdout: true, script: "find . -type f -name '*.java' | sort | xargs cat | md5sum | cut -d ' ' -f1").trim()
+                    def lastImageHash = sh(returnStdout: true, script: "docker inspect --format='{{.Id}}' ashutosham2002/java-spring-boot-app:$BUILD_ID || echo 'notfound'").trim()
+
+                    if (dockerfileHash == lastImageHash && sourceCodeHash == lastImageHash) {
+                        echo "Skipping Docker image push because there are no changes."
+                    } else {
+                        sh '''
+                        docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
+                        echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                        docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
+                        docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
+                        '''
+                    }
+                 }
+              }
         }
         stage('identifying misconfig using datree in helm charts'){
             steps{
