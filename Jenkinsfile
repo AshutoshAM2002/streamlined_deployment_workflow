@@ -39,11 +39,6 @@ pipeline{
             }
         }
         stage('identifying misconfig using datree in helm charts'){
-            agent{
-                docker {
-                    image 'datree/datree'
-                }
-            }
             steps{
                 script{
                     dir('kubernetes/'){
