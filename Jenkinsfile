@@ -42,7 +42,10 @@ pipeline{
             steps{
                 script{
                     dir('kubernetes/'){
-                        sh 'helm datree test helm-charts/'
+                        withEnv(['DATRFF_TOKEN=e24c894e-68c8-405b-9551-e4dfbea829bd']){
+                            sh 'helm datree test helm-charts/'
+                        }
+                        
                     }
                 }
             }
