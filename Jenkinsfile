@@ -69,6 +69,15 @@ pipeline{
                 }
             }
         }
+        stage('deploying application on k8s cluster'){
+            steps{
+                script{
+                    kubeconfig(credentialsId: 'kubeconfig', serverUrl: 'https://10.0.0.13:6443') {
+                        sh "kubectl get nodes"
+                    }
+                }
+            }
+        }
     }
     post {
 		always {
