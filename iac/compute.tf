@@ -63,6 +63,27 @@ resource "google_compute_instance" "k8s-server" {
     }
   }
 }
+resource "google_compute_instance" "k8s_slave" {
+  name         = "k8s-slave"
+  zone         = "asia-south1-c"
+  machine_type = "e2-medium"
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size  = 20
+    }
+  }
+  service_account {
+    scopes = ["cloud-platform"]
+  }
+  network_interface {
+    network    = google_compute_network.main.id
+    subnetwork = google_compute_subnetwork.private.id
+    access_config {
+      network_tier = "PREMIUM"
+    }
+  }
+}
 
 resource "google_compute_instance" "nexus-server" {
   name         = "nexus-server"
