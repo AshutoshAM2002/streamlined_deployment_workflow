@@ -1,8 +1,9 @@
 replicaCount: 2
 
 image:
-  repository: ashutosham2002/java-spring-boot-app:49
+  repository: IMAGE_NAME
   pullPolicy: IfNotPresent
+  tag: IMAGE_TAG
 
 service:
   type: NodePort

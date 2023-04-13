@@ -1,7 +1,7 @@
 pipeline{
     agent any
     environment {
-        DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred')
+        VERSION = "${env.BUILD_ID}"
     }
     stages{
         stage("sonar quality check"){
@@ -31,28 +31,20 @@ pipeline{
         stage("docker build and docker push"){
             steps{
                 script{
-                    dir('App/'){
-                        def changes = sh(script: 'git status --porcelain', returnStdout: true).trim()
-                        if (changes) {
+                    withCredentials([string(credentialsId: 'nexus_pass', variable: 'nexus_cred')]) {
+                        dir('App/'){
                             sh '''
-                            docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
-                            echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                            docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
-                            docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
+                            docker build -t 10.0.0.14:8083/java_spring_app:${VERSION} .
+                            docker login -u admin -p $nexus_cred 10.0.0.14:8083 
+                            docker push  10.0.0.14:8083/java_spring_app:${VERSION}
+                            docker rmi 10.0.0.14:8083/java_spring_app:${VERSION}
                             '''
-                        } else {
-                            echo "No changes detected. Skipping Docker build and push."
                         }
-//                        sh '''
-//                        docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
-//                        echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-//                        docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
-//                        docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
-//                        '''
                     }
                 }
             }
         }
+                    
         stage('identifying misconfig using datree in helm charts'){
             steps{
                 script{
