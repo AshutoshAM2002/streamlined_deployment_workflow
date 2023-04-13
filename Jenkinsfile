@@ -53,7 +53,7 @@ pipeline{
                 }
             }
         }
-        stage('pushing the helm chart to nexux'){
+        stage('pushing the helm chart to nexus'){
             steps{
                 script{
                     dir('kubernetes/'){
