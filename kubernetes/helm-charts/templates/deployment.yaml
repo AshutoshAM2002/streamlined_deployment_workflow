@@ -19,14 +19,39 @@ spec:
         securityContext:
             allowPrivilegeEscalation: false
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        livenessProbe:
-          exec:
-            command:
-              - cat
-              - /tmp/healthy
+#        livenessProbe:
+#          exec:
+#            command:
+#              - cat
+#              - /tmp/healthy
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.port }}
+        livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 10
+        readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 10
+        resources:
+            requests:
+              memory: 0.25Gi
+              cpu: 0.5
+            limits:
+              memory: 0.25Gi 
+              cpu: 0.5
         volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.persistentvolume.hostpath }}
