@@ -32,12 +32,23 @@ pipeline{
             steps{
                 script{
                     dir('App/'){
-                        sh '''
-                        docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
-                        echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                        docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
-                        docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
-                        '''
+                        def changes = sh(script: 'git status --porcelain', returnStdout: true).trim()
+                        if (changes) {
+                            sh '''
+                            docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
+                            echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                            docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
+                            docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
+                            '''
+                        } else {
+                            echo "No changes detected. Skipping Docker build and push."
+                        }
+//                        sh '''
+//                        docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
+//                        echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+//                        docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
+//                        docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
+//                        '''
                     }
                 }
             }
