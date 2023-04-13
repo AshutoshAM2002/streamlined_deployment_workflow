@@ -61,7 +61,7 @@ pipeline{
                             sh '''
                                  helmversion=$(helm show chart helm-charts | grep version | cut -d: -f 2 | tr -d ' ')
                                  tar -czvf myapp-${helmversion}.tgz helm-charts/
-                                 curl -u admin:$nexus_cred http://10.0.0.14:8081/repository/helm-charts-hosted/ --upload-file myapp-${helmversion}.tgz -v
+                                 curl -u admin:$nexus_cred http://35.200.194.92:8081/repository/helm-charts-hosted/ --upload-file myapp-${helmversion}.tgz -v
                             '''
                         }
                     }
