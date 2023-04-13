@@ -13,39 +13,25 @@ pipeline{
             }
             steps{
                 script{
-                    withSonarQubeEnv('sonarserver') {
-                        sh 'mvn compile sonar:sonar'
-                    }
-                        timeout(time: 1, unit: 'HOURS'){
-                        def qg = waitForQualityGate()
-                            if (qg.status != 'OK'){
-                                error "pipeline aborted due to quality gate failure: ${qg.status}"
-                            }
+                    dir('App/'){
+                        withSonarQubeEnv('sonarserver') {
+                            sh 'mvn compile sonar:sonar'
                         }
-                            sh "mvn clean install"
+                            timeout(time: 1, unit: 'HOURS'){
+                            def qg = waitForQualityGate()
+                                if (qg.status != 'OK'){
+                                    error "pipeline aborted due to quality gate failure: ${qg.status}"
+                                }
+                            }
+                                sh "mvn clean install"
+                    }
                 }
             }
         }
         stage("docker build and docker push"){
-//            steps{
-//                script{
-//                    sh '''
-//                    docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
-//                    echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-//                    docker push ashutosham2002/java-spring-boot-app:$BUILD_ID
-//                    docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
-//                    '''
-//                }
-//            }
-              steps{
-                 script{
-                    def dockerfileHash = sh(returnStdout: true, script: "md5sum Dockerfile | cut -d ' ' -f1").trim()
-                    def sourceCodeHash = sh(returnStdout: true, script: "find . -type f -name '*.java' | sort | xargs cat | md5sum | cut -d ' ' -f1").trim()
-                    def lastImageHash = sh(returnStdout: true, script: "docker inspect --format='{{.Id}}' ashutosham2002/java-spring-boot-app:$BUILD_ID || echo 'notfound'").trim()
-
-                    if (dockerfileHash == lastImageHash && sourceCodeHash == lastImageHash) {
-                        echo "Skipping Docker image push because there are no changes."
-                    } else {
+            steps{
+                script{
+                    dir('App/'){
                         sh '''
                         docker build -t ashutosham2002/java-spring-boot-app:$BUILD_ID --build-arg BUILD_ID=$BUILD_ID .
                         echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
@@ -53,8 +39,8 @@ pipeline{
                         docker rmi ashutosham2002/java-spring-boot-app:$BUILD_ID
                         '''
                     }
-                 }
-              }
+                }
+            }
         }
         stage('identifying misconfig using datree in helm charts'){
             steps{
@@ -62,9 +48,22 @@ pipeline{
                     dir('kubernetes/'){
                         withEnv(['DATREE_TOKEN=e24c894e-68c8-405b-9551-e4dfbea829bd']){
                             sh 'helm datree test helm-charts/'
-
                         }
-                        
+                    }
+                }
+            }
+        }
+        stage('pushing the helm chart to nexux'){
+            steps{
+                script{
+                    dir('kubernetes/'){
+                        withCredentials([string(credentialsId: 'nexus_pass', variable: 'nexus_cred')]) {
+                            sh '''
+                                 helmversion=$(helm show chart helm-charts | grep version | cut -d: -f 2 | tr -d ' ')
+                                 tar -czvf myapp-${helmversion}.tgz helm-charts/
+                                 curl -u admin:$nexus_cred http://10.0.0.14:8081/repository/helm-charts-hosted/ --upload-file myapp-${helmversion}.tgz -v
+                            '''
+                        }
                     }
                 }
             }
