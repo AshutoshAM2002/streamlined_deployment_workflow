@@ -22,12 +22,6 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.port }}
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
         volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.persistentvolume.hostpath }}
