@@ -19,25 +19,14 @@ spec:
         securityContext:
             allowPrivilegeEscalation: false
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        command: ["/bin/sh"]
-        args: ["-c","sh /usr/local/tomcat/bin/startup.sh;while true; do echo hello; sleep 10;done"]
-#        livenessProbe:
-#          exec:
-#            command:
-#              - cat
-#              - /tmp/healthy
+        livenessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/healthy
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.port }}
-        livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
-            timeoutSeconds: 10
         volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.persistentvolume.hostpath }}
