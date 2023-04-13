@@ -18,7 +18,7 @@ spec:
       - name: {{ .Values.container.name }}
         securityContext:
             allowPrivilegeEscalation: false
-        image: {{ .Values.image.repository | quote }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         livenessProbe:
           exec:
             command:
